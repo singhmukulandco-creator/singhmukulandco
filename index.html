@@ -479,30 +479,35 @@ footer{background:#0a1e30;padding:40px 5% 22px}
       </div>
       <div class="ct-form">
         <h4>Send Your Enquiry</h4>
-        <div class="frow">
-          <div class="fg"><label>Full Name *</label><input type="text" placeholder="Your name"></div>
-          <div class="fg"><label>Phone No. *</label><input type="tel" placeholder="+91 XXXXX XXXXX"></div>
-        </div>
-        <div class="fg"><label>Email Address</label><input type="email" placeholder="your@email.com"></div>
-        <div class="fg">
-          <label>Service Required</label>
-          <select>
-            <option value="">-- Select Service --</option>
-            <option>Income Tax Filing (ITR)</option>
-            <option>GST Registration & Returns</option>
-            <option>Company / LLP Registration</option>
-            <option>Audit & Assurance</option>
-            <option>Accounting & Bookkeeping</option>
-            <option>TDS Compliance</option>
-            <option>Business Advisory</option>
-            <option>Tax Notices & Appeals</option>
-            <option>FEMA / RBI Compliance</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="fg"><label>Message</label><textarea placeholder="Briefly describe your requirement..."></textarea></div>
-        <button class="btn-sub" onclick="alert('Thank you! We will contact you within 24 hours.')">Submit Enquiry →</button>
-        <p class="fnote">🔒 Your information is completely confidential.</p>
+        <form id="enquiry-form" action="https://formspree.io/f/xykvbrjb" method="POST">
+          <div class="frow">
+            <div class="fg"><label>Full Name *</label><input type="text" name="name" placeholder="Your name" required></div>
+            <div class="fg"><label>Phone No. *</label><input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required></div>
+          </div>
+          <div class="fg"><label>Email Address</label><input type="email" name="email" placeholder="your@email.com"></div>
+          <div class="fg">
+            <label>Service Required</label>
+            <select name="service">
+              <option value="">-- Select Service --</option>
+              <option>Income Tax Filing (ITR)</option>
+              <option>GST Registration & Returns</option>
+              <option>Company / LLP Registration</option>
+              <option>Audit & Assurance</option>
+              <option>Accounting & Bookkeeping</option>
+              <option>TDS Compliance</option>
+              <option>Business Advisory</option>
+              <option>Tax Notices & Appeals</option>
+              <option>FEMA / RBI Compliance</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="fg"><label>Message</label><textarea name="message" placeholder="Briefly describe your requirement..."></textarea></div>
+          <input type="hidden" name="_subject" value="New Enquiry — Singh Mukul And Co Website">
+          <input type="hidden" name="_next" value="https://singhmukulandco.com/#contact">
+          <button type="submit" class="btn-sub" id="submit-btn">Submit Enquiry →</button>
+          <p class="fnote" id="form-msg"></p>
+          <p class="fnote">🔒 Your information is completely confidential.</p>
+        </form>
       </div>
     </div>
   </div>
@@ -660,6 +665,39 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   });
 });
 document.querySelectorAll('section[id]').forEach(s=>{s.style.scrollMarginTop='108px'});
+
+// Formspree AJAX submission
+const form = document.getElementById('enquiry-form');
+if(form){
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const msg = document.getElementById('form-msg');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {'Accept': 'application/json'}
+      });
+      if(res.ok){
+        msg.textContent = '✅ Thank you! We will contact you within 24 hours.';
+        msg.style.color = '#138808';
+        msg.style.fontWeight = '600';
+        form.reset();
+      } else {
+        msg.textContent = '❌ Something went wrong. Please call us directly: +91 88606 57110';
+        msg.style.color = '#c0392b';
+      }
+    } catch(err){
+      msg.textContent = '❌ Network error. Please call: +91 88606 57110';
+      msg.style.color = '#c0392b';
+    }
+    btn.textContent = 'Submit Enquiry →';
+    btn.disabled = false;
+  });
+}
 </script>
 </body>
 </html>
